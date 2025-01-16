@@ -17,10 +17,13 @@ jobs:
           sudo apt-get install jq
 
           # Get latest workflow run ID
-          latest_run_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                             -H "Accept: application/vnd.github+json" \
-                             "https://api.github.com/repos/repo2/actions/workflows/12807702292/runs \
-                             | jq -r '.workflow_runs[0].id')
+          latest_run_id=$(curl "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_output_job/dispatches" -s \
+                          -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" \
+                          -d '{
+                          "ref":"main",
+                          "inputs":{
+                           "id":"12345678"
+                            }}')
 
           # Print the list of run IDs
           echo "Workflow Run IDs:"
