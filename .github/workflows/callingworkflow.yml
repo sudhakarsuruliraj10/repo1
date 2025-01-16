@@ -1,18 +1,36 @@
-name: Get Workflow Run ID
+name: Get Latest Workflow Run
 
 on:
   workflow_dispatch:
 
 jobs:
-  get_run_id:
+  get_latest_run:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Workflow Run ID
-        id: get_run_id
-        run: |
-          echo "::set-output name=run_id::${{ github.run_id }}" 
+      - name: Get Latest Workflow Run
+        id: get_latest_run
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const octokit = require('@octokit/rest')()
+            octokit.auth('token ${{ secrets.GITHUB_TOKEN }}')
 
-      - name: Log Workflow Run ID
+            const { data: latestRuns } = await octokit.actions.listWorkflowRuns({
+              owner: sudhakarsuruliraj10,
+              repo: repo2,
+              workflow_file_name: 'Target.yaml',
+              per_page: 1, 
+            })
+
+            if (latestRuns.length > 0) {
+              core.setOutput('latest_run_id', latestRuns[0].id)
+              core.setOutput('latest_run_status', latestRuns[0].status) 
+            } else {
+              core.setOutput('latest_run_id', 'No runs found')
+              core.setOutput('latest_run_status', 'No runs found')
+            }
+
+      - name: Log Latest Workflow Run Information
         run: |
-          echo "Workflow Run ID: ${{ steps.get_run_id.outputs.run_id }}" 
-          echo "TOken: ${{ secrets. GITHUB_TOKEN }}" 
+          echo "Latest Workflow Run ID: ${{ steps.get_latest_run.outputs.latest_run_id }}"
+          echo "Latest Workflow Run Status: ${{ steps.get_latest_run.outputs.latest_run_status }}"
