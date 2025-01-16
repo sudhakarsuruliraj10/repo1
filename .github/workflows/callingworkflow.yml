@@ -15,4 +15,4 @@ jobs:
       - name: Log Workflow Run ID
         run: |
           echo "Workflow Run ID: ${{ steps.get_run_id.outputs.run_id }}" 
-          echo "TOken: ${{ secrets.ACTIONS_KEY  }}" 
+          echo "TOken: ${{ secrets. GITHUB_TOKEN }}" 
