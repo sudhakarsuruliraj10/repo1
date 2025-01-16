@@ -12,7 +12,7 @@ jobs:
         run: |
           latest_run_id=$(curl -s -H "Authorization: token ${{ secrets.ACTIONS_KEY }}" \
                              -H "Accept: application/vnd.github+json" \
-                             "https://api.github.com/repos/repo2/actions/workflows/set_output_job/runs \
+                             "https://api.github.com/repos/repo2/actions/workflows/set_output_job/runs" \
                              | jq -r '.workflow_runs[0].id')
       - name: Log Latest Workflow Run ID
         run: |
