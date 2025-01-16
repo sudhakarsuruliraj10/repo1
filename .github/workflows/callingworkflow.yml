@@ -15,7 +15,7 @@ jobs:
                -H "Accept: application/vnd.github+json" \
                -d '{"ref": "main"}' \ 
                "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_ouput_job/dispatches" \
-               > trigger_response.json)
+               )
 
       - name: Get Triggered Run ID
         id: get_triggered_run_id
