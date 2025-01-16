@@ -27,4 +27,4 @@ jobs:
 
           # Print the list of run IDs
           echo "Workflow Run IDs:"
-          echo "$workflow_runs" 
+          echo "$latest_run_id" 
