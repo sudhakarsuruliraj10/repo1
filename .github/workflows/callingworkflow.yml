@@ -1,30 +1,28 @@
-name: List Workflow Runs (Shell)
+name: Trigger and Get Latest Run ID
 
 on:
   workflow_dispatch:
 
 jobs:
-  list_runs:
+  trigger_workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: List Workflow Runs
+      - name: Trigger Workflow
+        id: trigger_workflow
         run: |
-          # Install jq for JSON processing
-          sudo apt-get update
-          sudo apt-get install jq
+          curl -s -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -d '{"ref": "main"}' \ 
+              "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_output_job/dispatches" \
+              > trigger_response.json
 
-          # Get latest workflow run ID
-          latest_run_id=$(curl "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_output_job/dispatches" -s \
-                          -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" \
-                          -d '{
-                          "ref":"main",
-                          "inputs":{
-                           "id":"12345678"
-                            }}')
+      - name: Get Triggered Run ID
+        id: get_triggered_run_id
+        run: |
+          triggered_run_id=$(jq -r '.id' trigger_response.json)
+          echo "::set-output name=triggered_run_id::$triggered_run_id"
 
-          # Print the list of run IDs
-          echo "Workflow Run IDs:"
-          echo "$latest_run_id" 
+      - name: Log Triggered Run ID
+        run: |
+          echo "Triggered Run ID: ${{ steps.get_triggered_run_id.outputs.triggered_run_id }}"
