@@ -1,37 +1,27 @@
-name: Get Latest Workflow Run
+name: List Workflow Runs (Shell)
 
 on:
   workflow_dispatch:
 
 jobs:
-  get_latest_run:
+  list_runs:
     runs-on: ubuntu-latest
     steps:
-      - run: npm i @octokit/rest
-      - name: Get Latest Workflow Run
-        id: get_latest_run
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const octokit = require('@octokit/rest')()
-            octokit.auth('token ${{ secrets.GITHUB_TOKEN }}')
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-            const { data: latestRuns } = await octokit.actions.listWorkflowRuns({
-              owner: sudhakarsuruliraj10,
-              repo: repo2,
-              workflow_file_name: 'Target.yaml',
-              per_page: 1, 
-            })
-
-            if (latestRuns.length > 0) {
-              core.setOutput('latest_run_id', latestRuns[0].id)
-              core.setOutput('latest_run_status', latestRuns[0].status) 
-            } else {
-              core.setOutput('latest_run_id', 'No runs found')
-              core.setOutput('latest_run_status', 'No runs found')
-            }
-
-      - name: Log Latest Workflow Run Information
+      - name: List Workflow Runs
         run: |
-          echo "Latest Workflow Run ID: ${{ steps.get_latest_run.outputs.latest_run_id }}"
-          echo "Latest Workflow Run Status: ${{ steps.get_latest_run.outputs.latest_run_status }}"
+          # Install jq for JSON processing
+          sudo apt-get update
+          sudo apt-get install jq
+
+          # Get list of workflow runs (replace with your actual workflow ID)
+          workflow_runs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                             -H "Accept: application/vnd.github+json" \
+                             "https://github.com/sudhakarsuruliraj10/repo2/actions/runs" | \
+                             jq -r '.workflow_runs[].id')
+
+          # Print the list of run IDs
+          echo "Workflow Run IDs:"
+          echo "$workflow_runs" 
