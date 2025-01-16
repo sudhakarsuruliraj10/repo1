@@ -1,28 +1,22 @@
-name: Trigger and Get Latest Run ID
+name: Get Latest Workflow Run ID (Shell)
 
 on:
   workflow_dispatch:
 
 jobs:
-  trigger_workflow:
+  get_latest_run_id:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Workflow
-        id: trigger_workflow
+      - name: Get Latest Workflow Run ID
+        id: get_latest_run_id
         run: |
-          latest_run_id=$(curl -s -X POST \
-               -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github+json" \
-               -d '{"ref": "main"}' \ 
-               "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_ouput_job/dispatches" \
-               )
+          latest_run_id=$(curl -s -H "Authorization: token ${{ secrets.ACTION_KEY }}" \
+                             -H "Accept: application/vnd.github+json" \
+                             "https://api.github.com/repos/repo2/actions/workflows/set_output_job/runs \
+                             | jq -r '.workflow_runs[0].id')
 
-      - name: Get Triggered Run ID
-        id: get_triggered_run_id
-        run: |
-          triggered_run_id=$(jq -r '.id' trigger_response.json)
-          echo "::set-output name=triggered_run_id::$triggered_run_id"
+          echo "::set-output name=latest_run_id::$latest_run_id"
 
-      - name: Log Triggered Run ID
+      - name: Log Latest Workflow Run ID
         run: |
-          echo "Triggered Run ID: ${{ steps.get_triggered_run_id.outputs.triggered_run_id }}"
+          echo "Latest Workflow Run ID: ${{ steps.get_latest_run_id.outputs.latest_run_id }}" 
