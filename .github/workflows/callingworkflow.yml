@@ -10,13 +10,12 @@ jobs:
       - name: Trigger Workflow
         id: trigger_workflow
         run: |
-          curl "https://api.github.com/repos/sudhakarsuruliraj10/repo2/actions/workflows/set_output_job/dispatches" -s \
-                          -H "Authorization: Token ${{ secrets.ACTIONS_KEY }}" \
-                          -d '{
-                          "ref":"main",
-                          "inputs":{
-                           "id":"12345678"
-                            }}' > trigger_response.json
+          curl -s -X POST \
+              -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -d '{"ref": "main"}' \ 
+              "https://api.github.com/repos/repo2/actions/workflows/set_ouput_job/dispatches" \
+              > trigger_response.json
 
       - name: Get Triggered Run ID
         id: get_triggered_run_id
