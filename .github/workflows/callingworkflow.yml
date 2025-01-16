@@ -7,6 +7,12 @@ jobs:
   get_latest_run:
     runs-on: ubuntu-latest
     steps:
+      - name: Render markdown
+        uses: juliangruber/octokit-action@v1
+        id: markdown
+        with:
+         github-token: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Get Latest Workflow Run
         id: get_latest_run
         uses: actions/github-script@v6
